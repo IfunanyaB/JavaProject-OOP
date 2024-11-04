@@ -1,252 +1,201 @@
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
-// A class to hold all the order entries
-class BouquetOrdered {
-    private TypeOfFlower flowerType;
-    private ColorOfFlower flowerColor;
-    private SizeOfFlower flowerSize;
-    private double totalPrice;
-
-    public BouquetOrdered(TypeOfFlower flowerType, ColorOfFlower flowerColor, SizeOfFlower flowerSize, double totalPrice) {
-        this.flowerType = flowerType;
-        this.flowerColor = flowerColor;
-        this.flowerSize = flowerSize;
-        this.totalPrice = totalPrice;
-    }
-
-    // Getters for private members of the BouquetOrdered
-    public TypeOfFlower getFlowerType() {
-        return flowerType;
-    }
-
-    public ColorOfFlower getFlowerColor() {
-        return flowerColor;
-    }
-
-    public SizeOfFlower getFlowerSize() {
-        return flowerSize;
-    }
-
-    public double getPrice() {
-        return totalPrice;
-    }
-
-    @Override
-    public String toString() {
-        return "BouquetOrdered{" +
-                "flowerType=" + flowerType +
-                ", flowerColor=" + flowerColor +
-                ", flowerSize=" + flowerSize +
-                ", totalPrice=" + totalPrice +
-                '}';
-    }
-}
-
 public class Main {
-    // Fixed arrays to hold the orders of BouquetOrdered
-    private static final int maximumOrders = 100;
-    private static BouquetOrdered[] orders = new BouquetOrdered[maximumOrders];
-    private static int orderCount = 0;
+
+    //  arrays for flower types, colors, sizes, and their corresponding prices
+    private static String flowerType[] = {"ROSE", "LILY", "CARNATIONS", "DAFFODIL", "GERBERA", "CHRYSANTHEMUM", "ASSORTED"};
+    private static double flowerTypePrices[] = {1.2, 1.3, 1.0, 1.0, 1.1, 1.1, 0.8};
+
+    private static String flowerColor[] = {"WHITE", "RED", "PINK/SALMON", "YELLOW", "BLUE", "ASSORTED"};
+    private static double flowerColorPrices[] = {1.3, 1.2, 1.1, 1.1, 1.2, 1.0};
+
+    private static String flowerSize[] = {"SMALL", "MEDIUM", "LARGE"};
+    private static double flowerSizePrices[] = {5.5, 7.5, 9.5};
+
+    // Arrays to store order data 
+    private static int[] orderFlowerTypes = new int[1000000];  // Index for flower types
+    private static int[] orderFlowerColors = new int[1000000]; // Index for flower colors
+    private static int[] orderFlowerSizes = new int[1000000];  // Index for flower sizes
+    private static double[] orderPrices = new double[1000000]; // Prices for each order
+    private static int orderCount = 0;  // to count the Total number of orders
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        int selectionInteger = 0;
-
-        // Arrays to hold the frequency counts
-        int[] flowerTypeCount = new int[TypeOfFlower.values().length];
-        int[] flowerColorCount = new int[ColorOfFlower.values().length];
-        int[] flowerSizeCount = new int[SizeOfFlower.values().length];
-
-        // Variables for statistics summary calculation
-        double minTotalPrice = Double.MAX_VALUE;
-        double maxTotalPrice = Double.MIN_VALUE;
-        double sumTotalPrice = 0;
-
-        // Using the do-while condition statement
+        int userInput = 0; // variable to get user input
+        boolean validInput; //control variable for the looping
+            
+        //applying the do..while loop 
         do {
-            System.out.println("Welcome! Our Flower Shop Menu:");
-            System.out.println("1. Order bouquet and get the totalPrice");
-            System.out.println("2. Display statistics");
+            System.out.println("    "); //to create spaces in the text displays
+            System.out.println("Welcome to our Flower Shop");
+            System.out.println("Flower Menu");
+            System.out.println("    ");
+            System.out.println("1. Order Bouquet");
+            System.out.println("2. Display Summary Statistics");
             System.out.println("3. Exit");
+            System.out.println("    "); //to create spaces in the text displays
 
-            // Validating user input
-            boolean validInput = false;
-
+            validInput = false;
             while (!validInput) {
-                System.out.print("Enter your selection: ");
-                if (scanner.hasNextInt()) {
-                    selectionInteger = scanner.nextInt();
-                    scanner.nextLine(); // to allow for a line break for a string input, since the initial user input was for integers only.
-
-                    if (selectionInteger >= 1 && selectionInteger <= 3) {
-                        validInput = true;
-                    } else {
-                        System.out.println("Invalid selection. Please enter a number between 1 and 3.");
-                    }
-                } else {
-                    System.out.println("Invalid input. Please enter an integer.");
-                    scanner.next(); // to allow for a new valid input
+                System.out.print("Enter a number on the menu (1, 2, or 3): ");
+                try {
+                    userInput = scanner.nextInt();
+                    validInput = true;
+                    //to catch any non numerical input
+                } catch (InputMismatchException e) {
+                    System.out.println("Invalid Input, Please enter an integer.");
+                    scanner.nextLine(); // Clear invalid input
                 }
             }
 
-            switch (selectionInteger) {
-                case 1: // when option 1 is entered
-                   
-                    try {
-                        System.out.println("Choose Flower Type (ROSE, LILY, CARNATIONS, DAFFODIL, GERBERA, CHRYSANTHEMUM, ASSORTED):");
-                        String flowerTypeValue = scanner.nextLine().toUpperCase();
-                        TypeOfFlower flowerType = TypeOfFlower.valueOf(flowerTypeValue);
-    
-                        System.out.println("Choose Flower Color (WHITE, RED, PINK, YELLOW, BLUE, ASSORTED):");
-                        String flowerColorValue = scanner.nextLine().toUpperCase();
-                        ColorOfFlower flowerColor = ColorOfFlower.valueOf(flowerColorValue);
-    
-                        System.out.println("Choose Bouquet Size (SMALL, MEDIUM, LARGE):");
-                        String flowerSizeValue = scanner.nextLine().toUpperCase();
-                        SizeOfFlower flowerSize = SizeOfFlower.valueOf(flowerSizeValue);
-    
-
-                        double totalPrice = orderDetailsAndPriceCalculation(flowerType, flowerColor, flowerSize);
-                        System.out.println("Order Price and calculation is: " + totalPrice);
-
-                        // using the if statement to record orders
-                        if (orderCount < maximumOrders) {
-                            BouquetOrdered order = new BouquetOrdered(flowerType, flowerColor, flowerSize, totalPrice);
-                            orders[orderCount++] = order;
-
-                            // to update frequency counts
-                            flowerTypeCount[flowerType.ordinal()]++;
-                            flowerColorCount[flowerColor.ordinal()]++;
-                            flowerSizeCount[flowerSize.ordinal()]++;
-
-                            // to update statistics of Min, Max, and total sum
-                            if (totalPrice < minTotalPrice) minTotalPrice = totalPrice;
-                            if (totalPrice > maxTotalPrice) maxTotalPrice = totalPrice;
-                            sumTotalPrice += totalPrice;
-                        } else {
-                            System.out.println("Maximum order limit reached.");
-                        }
-                    } catch (IllegalArgumentException e) {
-                        System.out.println("Invalid input. Please try again.");
-                    }
+            switch (userInput) {
+                case 1:
+                    orderDetailsAndPriceCalculation();
                     break;
-
-                case 2: // when option 2 is entered
-                    System.out.println("Summary Statistics Provided");
-
-                    // Print orders
-                    for (int i = 0; i < orderCount; i++) {
-                        System.out.println(orders[i]);
-                    }
-
-                    // Print frequency counts
-                    System.out.println("Flower Type Frequency:");
-                    for (TypeOfFlower type : TypeOfFlower.values()) {
-                        System.out.println(type + ": " + flowerTypeCount[type.ordinal()]);
-                    }
-
-                    System.out.println("Flower Color Frequency:");
-                    for (ColorOfFlower color : ColorOfFlower.values()) {
-                        System.out.println(color + ": " + flowerColorCount[color.ordinal()]);
-                    }
-
-                    System.out.println("Flower Size Frequency:");
-                    for (SizeOfFlower size : SizeOfFlower.values()) {
-                        System.out.println(size + ": " + flowerSizeCount[size.ordinal()]);
-                    }
-
-                    // Print Summary statistics
-                    double averageTotalPrice = sumTotalPrice / orderCount;
-                    double totalRange = maxTotalPrice - minTotalPrice;
-                    System.out.println("Minimum Total Price: " + minTotalPrice);
-                    System.out.println("Maximum Total Price: " + maxTotalPrice);
-                    System.out.println("Range of Total Price: " + totalRange);
-                    System.out.println("Total Count of Bouquets Ordered: " + orderCount);
-                    System.out.println("Total Price of All Bouquets: " + sumTotalPrice);
-                    System.out.println("Average Price of Bouquet: " + averageTotalPrice);
+                case 2:
+                    summaryStatistics();
                     break;
-
-                case 3: // when option 3 is entered
+                case 3:
                     System.out.println("Exiting...");
                     break;
-
                 default:
-                    System.out.println("Invalid selection. Please try again.");
-                    break;
+                    System.out.println("Invalid input, please enter 1, 2, or 3.");
             }
-        } while (selectionInteger != 3);
-
+        } while (userInput != 3);
         scanner.close();
     }
 
-    // Method to calculate the value based on flower type, flower color, and bouquet size
-    public static double orderDetailsAndPriceCalculation(TypeOfFlower flowerType, ColorOfFlower flowerColor, SizeOfFlower flowerSize) {
-        double flowerTypeValue = flowerType.getValue();
-        double flowerColorValue = flowerColor.getValue();
-        double flowerSizeValue = flowerSize.getValue();
-        return (flowerTypeValue + flowerColorValue) * flowerSizeValue;
-    }
-}
+    // Method for Order details and price calculation
+    public static void orderDetailsAndPriceCalculation() {
+        Scanner newInput = new Scanner(System.in);
+        boolean validInput = false;
+        int flowerTypeIndex = 0, flowerColorIndex = 0, flowerSizeIndex = 0;
 
-// Enum for flower types with corresponding values
-enum TypeOfFlower {
-    ROSE, LILY, CARNATIONS, DAFFODIL, GERBERA, CHRYSANTHEMUM, ASSORTED;
-
-    public double getValue() {
-        switch (this) {
-            case ROSE: return 1.2;
-            case LILY: return 1.3;
-            case CARNATIONS: return 1.0;
-            case DAFFODIL: return 1.0;
-            case GERBERA: return 1.1;
-            case CHRYSANTHEMUM: return 1.1;
-            case ASSORTED: return 0.8;
-            default: throw new IllegalArgumentException("invalid entry, please try again");
+        // Flower Type Selection
+        while (!validInput) {
+            System.out.println("Choose Flower Type:");
+            for (int i = 0; i < flowerType.length; i++) {
+                System.out.println((i + 1) + ". " + flowerType[i]);
+            }
+            System.out.print("Enter a number: ");
+            try {
+                flowerTypeIndex = newInput.nextInt() - 1;
+                if (flowerTypeIndex >= 0 && flowerTypeIndex < flowerType.length) {
+                    validInput = true;
+                } else {
+                    System.out.println("Invalid input, please enter a valid number.");
+                } //to catch any non numerical input
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input, please enter a number.");
+                newInput.nextLine(); // Clear invalid input
+            }
         }
-    }
-}
 
-// Enum for flower colors with corresponding values
-enum ColorOfFlower {
-    WHITE, RED, PINK, YELLOW, BLUE, ASSORTED;
-
-    public double getValue() {
-        switch (this) {
-            case WHITE: return 1.3;
-            case RED: return 1.2;
-            case PINK: return 1.1;
-            case YELLOW: return 1.1;
-            case BLUE: return 1.2;
-            case ASSORTED: return 1.0;
-            default: throw new IllegalArgumentException("invalid entry, please try again");
+        // Flower Color Selection
+        validInput = false; //resetting the loop control variable
+        while (!validInput) {
+            System.out.println("Choose Flower Color:");
+            for (int i = 0; i < flowerColor.length; i++) {
+                System.out.println((i + 1) + ". " + flowerColor[i]);
+            }
+            System.out.print("Enter a number: ");
+            try {
+                flowerColorIndex = newInput.nextInt() - 1;
+                if (flowerColorIndex >= 0 && flowerColorIndex < flowerColor.length) {
+                    validInput = true;
+                } else {
+                    System.out.println("Invalid input, please enter a valid number.");
+                } //to catch any non numerical input
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input, please enter a number.");
+                newInput.nextLine(); // Clear invalid input
+            }
         }
-    }
-}
 
-// Enum for bouquet sizes with corresponding values
-enum SizeOfFlower {
-    SMALL, MEDIUM, LARGE;
-
-    public double getValue() {
-        switch (this) {
-            case SMALL: return 5.5;
-            case MEDIUM: return 7.5;
-            case LARGE: return 9.5;
-            default: throw new IllegalArgumentException("invalid entry, please try again");
+        // Flower Size Selection
+        validInput = false;  //resetting the loop control variable
+        while (!validInput) {
+            System.out.println("Choose Flower Size:");
+            for (int i = 0; i < flowerSize.length; i++) {
+                System.out.println((i + 1) + ". " + flowerSize[i]);
+            }
+            System.out.print("Enter a number: ");
+            try {
+                flowerSizeIndex = newInput.nextInt() - 1;
+                if (flowerSizeIndex >= 0 && flowerSizeIndex < flowerSize.length) {
+                    validInput = true;
+                } else {
+                    System.out.println("Invalid input, please enter a valid number.");
+                }  //to catch any non numerical input
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input, please enter a number.");
+                newInput.nextLine(); // Clear invalid input
+            }
         }
+
+        // Price calculation
+        double price = (flowerTypePrices[flowerTypeIndex] + flowerColorPrices[flowerColorIndex]) * flowerSizePrices[flowerSizeIndex];
+        System.out.println("    "); //to create spaces in the text displays
+        System.out.printf("You chose %s in color %s, %s size. Total Price: %.2f\n", flowerType[flowerTypeIndex], flowerColor[flowerColorIndex], flowerSize[flowerSizeIndex], price);
+
+        // Store the order details
+        orderFlowerTypes[orderCount] = flowerTypeIndex;
+        orderFlowerColors[orderCount] = flowerColorIndex;
+        orderFlowerSizes[orderCount] = flowerSizeIndex;
+        orderPrices[orderCount] = price;
+        orderCount++;
+
+        System.out.println("Thank you for your purchase! Your bouquet has been ordered.");
+        System.out.println("    "); //to create spaces in the text displays
+    }
+
+    // Method for displaying summary statistics
+    public static void summaryStatistics() {
+        if (orderCount == 0) {
+            System.out.println("No orders placed yet.");
+            System.out.println("    "); //to create spaces in the text displays
+            return;
+        }
+
+        double minPrice = orderPrices[0];
+        double maxPrice = orderPrices[0];
+        double totalPrice = 0;
+
+        // Calculate minimum, maximum, and total prices
+        for (int i = 0; i < orderCount; i++) {
+            if (orderPrices[i] < minPrice) {
+                minPrice = orderPrices[i];
+            }
+            if (orderPrices[i] > maxPrice) {
+                maxPrice = orderPrices[i];
+            }
+            totalPrice += orderPrices[i];
+        }
+
+        // Frequency count for flower types
+        int[] flowerTypeCount = new int[flowerType.length];
+        for (int i = 0; i < orderCount; i++) {
+            flowerTypeCount[orderFlowerTypes[i]]++;
+        }
+
+        // to Display statistics
+        System.out.println("    "); //to create spaces in the text displays
+        System.out.println("Summary Statistics:");
+        System.out.println("    "); //to create spaces in the text displays
+        System.out.println("Minimum Price: " + minPrice);
+        System.out.println("Maximum Price: " + maxPrice);
+        System.out.println("Range of Price: " +  (maxPrice - minPrice) );
+        System.out.println("Total Number of Bouquets Ordered: " + orderCount);
+        System.out.println("Average Price: " + (totalPrice / orderCount));
+
+        // Display frequency of each flower type
+        System.out.println("Flower Type Frequency:");
+        for (int i = 0; i < flowerType.length; i++) {
+            if (flowerTypeCount[i] > 0) {
+                System.out.println(flowerType[i] + ": " + flowerTypeCount[i]);
+            }
+        }
+        System.out.println("    ");  //to create spaces in the text displays
     }
 }
-
-
-
-
-
-      
-
-            
-        
-
-
-    
-
-
