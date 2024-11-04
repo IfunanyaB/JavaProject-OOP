@@ -1,7 +1,7 @@
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-public class Main {
+public class Main2 {
 
     //  arrays for flower types, colors, sizes, and their corresponding prices
     private static String flowerType[] = {"ROSE", "LILY", "CARNATIONS", "DAFFODIL", "GERBERA", "CHRYSANTHEMUM", "ASSORTED"};
